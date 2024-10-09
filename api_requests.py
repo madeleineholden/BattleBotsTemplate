@@ -4,9 +4,15 @@ from constants import bot_session_id, detector_session_id
 import json
 
 # Environment Variables
+
 base_url = os.getenv('BASE_URL')
 authentication_token = os.getenv('AUTH_TOKEN')
 
+'''
+# FOR TESTING PURPOSES
+base_url = 'http://52.207.242.165:3000/api/test' #os.getenv(‘BASE_URL’)
+authentication_token = '' #os.getenv(‘AUTH_TOKEN’)
+'''
 header = {'Authorization': 'bearer ' + authentication_token, 'Content-Type': 'application/json'}
 
 #BOT SECTION
