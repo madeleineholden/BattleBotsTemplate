@@ -10,8 +10,14 @@ from teams_classes import DetectionMark
 from api_requests import get_session_data, submit_detection
 import json
 
+
 session_id = int(os.getenv('SESSION_ID'))
 code_max_time = int(os.getenv('MAX_TIME'))
+'''
+# FOR TESTING
+session_id = 1 #int(os.getenv(‘SESSION_ID’))
+code_max_time = 3601 #int(os.getenv(‘MAX_TIME’))
+'''
 
 logging.basicConfig(
     filename='run.log',

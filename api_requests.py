@@ -6,6 +6,12 @@ import json
 base_url = os.getenv('BASE_URL')
 authentication_token = os.getenv('AUTH_TOKEN')
 session_id = os.getenv('SESSION_ID')
+'''
+# FOR TESTING
+base_url = 'http://52.207.242.165:3000/api/test' #os.getenv(‘BASE_URL’)
+authentication_token = '' #os.getenv(‘AUTH_TOKEN’)
+session_id = 1 #os.getenv(‘SESSION_ID’)
+'''
 
 header = {'Authorization': 'bearer ' + authentication_token, 'Content-Type': 'application/json'}
 
