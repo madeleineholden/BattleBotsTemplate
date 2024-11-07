@@ -30,37 +30,6 @@ class Detector(ADetector):
         std_tweet_count=np.std(tweet_counts)
         #########################################################################################
         
-        languages=[]
-        locations=[]
-
-        print("GOT TO THIS POINT\n")
-
-        for post in posts:
-            # Get languages
-            lang=post['lang']
-            if lang not in languages and lang != None:
-                languages.append(lang)
-
-        for user in users:
-            print('working')
-
-            # Get tweet count
-            tweet_counts.append(user['tweet_count'])
-
-            # Get locations
-            location=user['location']
-            if location not in locations and location != None:
-                locations.append(location)
-
-        tweet_count_mean=np.mean(tweet_counts)
-        tweet_count_std=np.std(tweet_counts)
-
-        print("Mean tweet count:", tweet_count_mean)
-        print("Standard deviation of tweet count:", tweet_count_std)
-
-        print("Languages:", languages)
-        print("Locations:", locations)
-
         for user in users:
             bot_criteria=0
             
