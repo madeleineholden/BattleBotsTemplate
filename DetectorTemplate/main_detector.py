@@ -18,7 +18,6 @@ code_max_time = int(os.getenv('MAX_TIME'))
 session_id = 1 #int(os.getenv(‘SESSION_ID’))
 code_max_time = 3601 #int(os.getenv(‘MAX_TIME’))
 '''
-
 logging.basicConfig(
     filename='run.log',
     filemode='w',
@@ -46,6 +45,8 @@ try:
     detector = Detector()
     # ask for Session Info
     get_session_response, session_dataset = get_session_data()
+
+    #print("STATUS CODE:", get_session_response.status_code)
 
     all_id_set = set()
     for user in session_dataset.users:
