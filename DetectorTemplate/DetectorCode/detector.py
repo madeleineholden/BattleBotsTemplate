@@ -45,7 +45,7 @@ class Detector(ADetector):
                 bot_criteria+=1
 
             ############################################################################################
-            # CHECK 3 - check if user has multiple posts with the same content
+            # CHECK 3 - check if user has multiple posts with the exact same content
             current_users_posts=[]
             for post in posts:
                 if user['id']==post['author_id']:
@@ -82,16 +82,16 @@ class Detector(ADetector):
 
             ############################################################################################
             # CHECK 6 - check if z-score is above mean + std?
-            if user['z_score'] > avg_z_score + std_z_score:
+            if user['z_score'] > avg_z_score + 2*std_z_score:
                 bot_criteria+=1
 
             ############################################################################################
             # CHECK 7 - check if tweet count is above mean + std?
-            if user['tweet_count'] > avg_tweet_count + std_tweet_count:
+            if user['tweet_count'] > avg_tweet_count + 2*std_tweet_count:
                 bot_criteria+=1
 
             ############################################################################################
-            # FINAL CLASSIFICATION
+            # FINAL BOT CLASSIFICATION
 
             is_bot = bot_criteria>0 # If any of the criteria are met, classify as bot
             conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
