@@ -71,12 +71,12 @@ class Detector(ADetector):
                     bot_criteria+=1
 
             ############################################################################################
-            # CHECK 2- check if user has a non-alphanumeric ID
+            # CHECK 2 - check if user has a non-alphanumeric ID
             if not user['id'].isalnum():
                 bot_criteria+=1
 
             ############################################################################################
-            # CHECK 3- check if user has multiple posts with the same content
+            # CHECK 3 - check if user has multiple posts with the same content
             current_users_posts=[]
             for post in posts:
                 if user['id']==post['author_id']:
@@ -86,7 +86,7 @@ class Detector(ADetector):
                 bot_criteria+=1
 
             ############################################################################################
-            # CHECK 4- check if time between posts is less than a certain threshold (e.g. 30 seconds?)
+            # CHECK 4 - check if time between posts is less than a certain threshold (e.g. 30 seconds?)
             post_times=[]
 
             for post in posts:
@@ -105,7 +105,7 @@ class Detector(ADetector):
                 bot_criteria+=1
             
             ############################################################################################
-            # CHECK 5- check if all tweets are from the same day
+            # CHECK 5 - check if all tweets are from the same day
             post_times=[time.date() for time in post_times] # get only the date part of the datetime object
 
             if len(set(post_times))==1: # indicates all tweets from same day (all dates are the same)
