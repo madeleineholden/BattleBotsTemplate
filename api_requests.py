@@ -3,17 +3,16 @@ import requests
 import json
 
 # Environment Variables
-'''
 base_url = os.getenv('BASE_URL')
 authentication_token = os.getenv('AUTH_TOKEN')
 session_id = os.getenv('SESSION_ID')
 '''
 # FOR TESTING
-base_url = 'http://52.207.242.165:3000/api/test/11' #os.getenv(‘BASE_URL’)
+base_url = 'http://52.207.242.165:3000/api/test/12' #os.getenv(‘BASE_URL’)
 #authentication_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtSWQiOiI1IiwidGVhbU5hbWUiOiJtYWRkeWRldGVjdG9yMSIsImlhdCI6MTczMTAxNzA4MSwiZXhwIjoxNzMxMTAzNDgxfQ.6BsM2rzf07AoQBWbSiKC4OoCOdZubfLRHuxYxtismUA' #os.getenv(‘AUTH_TOKEN’)
 authentication_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtSWQiOiI1IiwidGVhbU5hbWUiOiJtYWRkeWRldGVjdG9yMSIsImlhdCI6MTczMTM2MTUzNCwiZXhwIjoxNzMxNDQ3OTM0fQ.zC6PQDuZoXlaA8oUdq7eAiqAXwudjpY-o1dAGAB7xiA'
 session_id = 1 #os.getenv(‘SESSION_ID’)
-
+'''
 header = {'Authorization': 'bearer ' + authentication_token, 'Content-Type': 'application/json'}
 
 #BOT SECTION
