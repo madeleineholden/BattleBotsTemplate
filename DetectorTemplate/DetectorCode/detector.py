@@ -92,11 +92,27 @@ class Detector(ADetector):
 
             ############################################################################################
             # FINAL BOT CLASSIFICATION
-
             is_bot = bot_criteria>0 # If any of the criteria are met, classify as bot
-            conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
+            #conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
+            # TRYING SIGMOID FUNCTION TO CALCULATE CONFIDENCE
+            conf = int(round(1 / (1 + max_confidence*np.exp(-bot_criteria))*100,1)) # 1 / (1 + e^(-x)) (shifted to be between 0 & 7)
 
             marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
+
+        print("\nMarked Accounts:")
+        i=1
+        #user_ids=[]
+        confidence_levels=[]
+        for account in marked_account:
+            print(i, account)
+            i+=1
+            if account.confidence!=0:
+                confidence_levels.append(account.confidence)
+            #user_ids.append(account.user_id)
+
+        #if len(user_ids)!=len(set(user_ids)):
+        #    print("DUPLICATE USER IDS FOUND")
+        #print(confidence_levels)
             
         return marked_account
 
