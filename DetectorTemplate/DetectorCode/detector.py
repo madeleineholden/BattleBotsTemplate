@@ -4,12 +4,14 @@ from teams_classes import DetectionMark
 import numpy as np
 from datetime import datetime
 
+import json
+
 class Detector(ADetector):
     def detect_bot(self, session_data):
         # todo logic
         marked_account = [] # Empty list to put DetectionMark objects
         
-        max_confidence=7 # CHANGE TO THE NUMBER OF CRITERIA I COME UP WITH
+        max_confidence=8 # CHANGE TO THE NUMBER OF CRITERIA I COME UP WITH
 
         #print("Session Data:", session_data)
         posts=session_data.posts
@@ -75,9 +77,9 @@ class Detector(ADetector):
             
             ############################################################################################
             # CHECK 5 - check if all tweets are from the same day
-            post_times=[time.date() for time in post_times] # get only the date part of the datetime object
+            post_dates=[time.date() for time in post_times] # get only the date part of the datetime object
 
-            if len(set(post_times))==1: # indicates all tweets from same day (all dates are the same)
+            if len(set(post_dates))==1: # indicates all tweets from same day (all dates are the same)
                 bot_criteria+=1
 
             ############################################################################################
@@ -91,23 +93,53 @@ class Detector(ADetector):
                 bot_criteria+=1
 
             ############################################################################################
+            # CHECK 8 - check if date posted is in the future
+            today=datetime.today()
+
+            # Check if any times are after today:
+            if any(time > today for time in post_times):
+                bot_criteria+=1
+                #print("CHECK 8 HAPPENED")
+
+            ############################################################################################
             # FINAL BOT CLASSIFICATION
+            classifier = 1 / (1 + np.exp(3)*np.exp(-bot_criteria))
+    
+            if classifier>=0.5:
+                is_bot=True
+            else:
+                is_bot=False
+            
+            conf=round(1 / (1 + np.exp(8/2)*np.exp(-4))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
+        
+            marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
+            '''
             is_bot = bot_criteria>0 # If any of the criteria are met, classify as bot
-            #conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
-            # TRYING SIGMOID FUNCTION TO CALCULATE CONFIDENCE
-            conf = int(round(1 / (1 + max_confidence*np.exp(-bot_criteria))*100,1)) # 1 / (1 + e^(-x)) (shifted to be between 0 & 7)
+
+            if is_bot:
+                #conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
+                # TRYING SIGMOID FUNCTION TO CALCULATE CONFIDENCE
+                if bot_criteria==8:
+                    print('ALL CRITERIA SATISFIED')
+                conf = round(1 / (1 + max_confidence*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
+            else:
+                conf=1
 
             marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
+            '''
+            
 
-        print("\nMarked Accounts:")
+        #print("\nMarked Accounts:")
         i=1
         #user_ids=[]
         confidence_levels=[]
         for account in marked_account:
-            print(i, account)
+            #print(i, account)
             i+=1
             if account.confidence!=0:
                 confidence_levels.append(account.confidence)
+                #if account.confidence==100:
+                    #print("CONFIDENCE LEVEL 100 FOUND")
             #user_ids.append(account.user_id)
 
         #if len(user_ids)!=len(set(user_ids)):
@@ -138,6 +170,11 @@ IDEAS:
 - check if user posting multiple times in a row
 - check if multiple posts have the exact same content
 - check if all tweets are from the same day
+- check if date posted is in the future -> DONE
+UNTRIED:
+- check if some tweets don't have any letters (e.g. all emojis, all numbers, etc.)
+- could look into topic model from llcu 255?
+- something with TFIDF
 '''
 
 '''
