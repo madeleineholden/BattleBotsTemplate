@@ -105,10 +105,7 @@ class Detector(ADetector):
             # FINAL BOT CLASSIFICATION
             classifier = 1 / (1 + np.exp(3)*np.exp(-bot_criteria))
     
-            if classifier>=0.5:
-                is_bot=True
-            else:
-                is_bot=False
+            is_bot = classifier>=0.5
             
             conf=round(1 / (1 + np.exp(8/2)*np.exp(-4))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
         
