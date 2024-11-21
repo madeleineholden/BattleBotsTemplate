@@ -36,25 +36,24 @@ class Detector(ADetector):
         for user in users:
             user_id=user['id']
             num_tweets=user['tweet_count']
-            #score=user_sentiment_scores[user_id]
 
-            final_sentiment, conf, is_bot = 0, 0, False
+            final_sentiment, conf, is_bot = 0, 0, False # initialize variables with base values
 
             if num_tweets==0: # if user has no tweets, assume bot
                 is_bot=True
                 final_sentiment=sentiment_classifier
                 conf=95
-            else:
-                sentiment_per_post=user_sentiment_scores[user_id]/num_tweets#*100
+            else: # if user does have some tweets
+                sentiment_per_post=user_sentiment_scores[user_id]/num_tweets # get avg sentiment per post
 
                 if sentiment_per_post < sentiment_classifier: # if sentiment less than avg, not bot
-                    conf=(1-sentiment_per_post)*100
+                    conf=(1-sentiment_per_post)*100 # conf = inverse of sentiment
                     is_bot=False
                 else: # if sentiment greater than avg, bot
-                    conf=sentiment_per_post*100
+                    conf=sentiment_per_post*100 # use sentiment as conf
                     is_bot=True
 
-            conf=round(conf) # round to nearest integer
+            conf=round(conf) # problem with decimals -> round to nearest integer
 
             marked_account.append(DetectionMark(user_id=user_id, confidence=conf, bot=is_bot))
         
