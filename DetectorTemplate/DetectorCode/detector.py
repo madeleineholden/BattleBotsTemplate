@@ -3,14 +3,61 @@ from teams_classes import DetectionMark
 
 import numpy as np
 from datetime import datetime
-
 import json
+from textblob import TextBlob
 
 class Detector(ADetector):
     def detect_bot(self, session_data):
         # todo logic
         marked_account = [] # Empty list to put DetectionMark objects
+
+        posts=session_data.posts
+        users=session_data.users
+
+        sentiment_classifier=0.75 # COME BACK AND CHANGE IF DOESN'T WORK WELL
+
+        user_sentiment_scores={user['id']:0 for user in users}
+
+        for post in posts:
+            user_id=post['author_id']
+            text=post['text']
+
+            # Calculate sentiment score for each post
+            analysis=TextBlob(text)
+            polarity=analysis.sentiment.polarity # score between -1 and 1
+            sentiment_score=abs(polarity)
+
+            # Update user's sentiment score
+            if sentiment_score > 0: # if not neutral
+                user_sentiment_scores[user_id]+=sentiment_score
+
+        for user in users:
+            user_id=user['id']
+            num_tweets=user['tweet_count']
+            #score=user_sentiment_scores[user_id]
+
+            mean_score, conf, is_bot = 0, 0, False
+
+            if num_tweets==0: # if user has no tweets, assume bot
+                is_bot=True
+                mean_score=sentiment_classifier
+                conf=95
+            else:
+                avg_sentiment=user_sentiment_scores[user_id]/num_tweets*100
+
+                if avg_sentiment < sentiment_classifier: # if sentiment less than avg, not bot
+                    conf=1-avg_sentiment
+                    is_bot=False
+                else: # if sentiment greater than avg, bot
+                    conf=avg_sentiment
+                    is_bot=True
+
+            conf=round(conf) # round to nearest integer
+
+            marked_account.append(DetectionMark(user_id=user_id, confidence=conf, bot=is_bot))
         
+        return marked_account
+        '''
         max_confidence=8 # CHANGE TO THE NUMBER OF CRITERIA I COME UP WITH
 
         #print("Session Data:", session_data)
@@ -110,40 +157,10 @@ class Detector(ADetector):
             conf=round(1 / (1 + np.exp(8/2)*np.exp(-4))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
         
             marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
-            '''
-            is_bot = bot_criteria>0 # If any of the criteria are met, classify as bot
-
-            if is_bot:
-                #conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
-                # TRYING SIGMOID FUNCTION TO CALCULATE CONFIDENCE
-                if bot_criteria==8:
-                    print('ALL CRITERIA SATISFIED')
-                conf = round(1 / (1 + max_confidence*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
-            else:
-                conf=1
-
-            marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
-            '''
-            
-
-        #print("\nMarked Accounts:")
-        i=1
-        #user_ids=[]
-        confidence_levels=[]
-        for account in marked_account:
-            #print(i, account)
-            i+=1
-            if account.confidence!=0:
-                confidence_levels.append(account.confidence)
-                #if account.confidence==100:
-                    #print("CONFIDENCE LEVEL 100 FOUND")
-            #user_ids.append(account.user_id)
-
-        #if len(user_ids)!=len(set(user_ids)):
-        #    print("DUPLICATE USER IDS FOUND")
-        #print(confidence_levels)
             
         return marked_account
+        '''
+        
 
 '''
 NOTES:
