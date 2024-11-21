@@ -2,7 +2,7 @@ from abc_classes import ADetector
 from teams_classes import DetectionMark
 
 import numpy as np
-from datetime import datetime
+#from datetime import datetime
 import json
 from textblob import TextBlob
 
@@ -25,10 +25,12 @@ class Detector(ADetector):
             # Calculate sentiment score for each post
             analysis=TextBlob(text)
             polarity=analysis.sentiment.polarity # score between -1 and 1
+            category=('positive' if polarity > 0 else 'negative' if polarity < 0 else 'neutral')
             sentiment_score=abs(polarity)
 
             # Update user's sentiment score
-            if sentiment_score > 0: # if not neutral
+            #if sentiment_score > 0: # if not neutral
+            if category != 'neutral':
                 user_sentiment_scores[user_id]+=sentiment_score
 
         for user in users:
@@ -36,20 +38,20 @@ class Detector(ADetector):
             num_tweets=user['tweet_count']
             #score=user_sentiment_scores[user_id]
 
-            mean_score, conf, is_bot = 0, 0, False
+            final_sentiment, conf, is_bot = 0, 0, False
 
             if num_tweets==0: # if user has no tweets, assume bot
                 is_bot=True
-                mean_score=sentiment_classifier
+                final_sentiment=sentiment_classifier
                 conf=95
             else:
-                avg_sentiment=user_sentiment_scores[user_id]/num_tweets*100
+                sentiment_per_post=user_sentiment_scores[user_id]/num_tweets#*100
 
-                if avg_sentiment < sentiment_classifier: # if sentiment less than avg, not bot
-                    conf=1-avg_sentiment
+                if sentiment_per_post < sentiment_classifier: # if sentiment less than avg, not bot
+                    conf=(1-sentiment_per_post)*100
                     is_bot=False
                 else: # if sentiment greater than avg, bot
-                    conf=avg_sentiment
+                    conf=sentiment_per_post*100
                     is_bot=True
 
             conf=round(conf) # round to nearest integer
