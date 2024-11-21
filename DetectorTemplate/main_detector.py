@@ -14,7 +14,7 @@ session_id = int(os.getenv('SESSION_ID'))
 code_max_time = int(os.getenv('MAX_TIME'))
 '''
 # FOR TESTING
-session_id = 3 #int(os.getenv(‘SESSION_ID’))
+session_id = 4 #int(os.getenv(‘SESSION_ID’))
 code_max_time = 3601 #int(os.getenv(‘MAX_TIME’))
 '''
 logging.basicConfig(

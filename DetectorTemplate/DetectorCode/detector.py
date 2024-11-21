@@ -1,9 +1,7 @@
 from abc_classes import ADetector
 from teams_classes import DetectionMark
-
 import numpy as np
 from datetime import datetime
-
 import json
 
 class Detector(ADetector):
@@ -32,7 +30,10 @@ class Detector(ADetector):
         std_tweet_count=np.std(tweet_counts)
         #########################################################################################
         
+        #previous_user_ids=[]
+
         for user in users:
+
             bot_criteria=0
             
             ############################################################################################
@@ -107,44 +108,11 @@ class Detector(ADetector):
     
             is_bot = classifier>=0.5
             
-            conf=round(1 / (1 + np.exp(8/2)*np.exp(-4))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
-        
-            marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
-            '''
-            is_bot = bot_criteria>0 # If any of the criteria are met, classify as bot
-
-            if is_bot:
-                #conf = int(round(bot_criteria/max_confidence*100,0)) # Confidence = num of criteria met / max confidence
-                # TRYING SIGMOID FUNCTION TO CALCULATE CONFIDENCE
-                if bot_criteria==8:
-                    print('ALL CRITERIA SATISFIED')
-                conf = round(1 / (1 + max_confidence*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
-            else:
-                conf=1
+            conf=round(1 / (1 + np.exp(max_confidence/2)*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
 
             marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
-            '''
-            
 
-        #print("\nMarked Accounts:")
-        i=1
-        #user_ids=[]
-        confidence_levels=[]
-        for account in marked_account:
-            #print(i, account)
-            i+=1
-            if account.confidence!=0:
-                confidence_levels.append(account.confidence)
-                #if account.confidence==100:
-                    #print("CONFIDENCE LEVEL 100 FOUND")
-            #user_ids.append(account.user_id)
-
-        #if len(user_ids)!=len(set(user_ids)):
-        #    print("DUPLICATE USER IDS FOUND")
-        #print(confidence_levels)
-            
         return marked_account
-
 '''
 NOTES:
 * POST LEVEL:
@@ -164,14 +132,16 @@ NOTES:
 IDEAS:
 - do something with language? --> one of the bot tweets has "string" instead of "en"
 - for confidence: have some metrics that updates, so if you get multiple indicators of a bot, increase confidence
-- check if user posting multiple times in a row
-- check if multiple posts have the exact same content
-- check if all tweets are from the same day
+- check if user posting multiple times in a row -> DONE
+- check if multiple posts have the exact same content -> DONE
+- check if all tweets are from the same day -> DONE
 - check if date posted is in the future -> DONE
 UNTRIED:
 - check if some tweets don't have any letters (e.g. all emojis, all numbers, etc.)
 - could look into topic model from llcu 255?
 - something with TFIDF
+- measure cosine similarity btw current tweets and previous bot tweets
+- random forest classifier?
 '''
 
 '''

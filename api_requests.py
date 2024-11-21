@@ -9,9 +9,9 @@ authentication_token = os.getenv('AUTH_TOKEN')
 session_id = os.getenv('SESSION_ID')
 '''
 # FOR TESTING
-base_url = 'http://52.207.242.165:3000/api/test/29' #os.getenv(‘BASE_URL’)
-authentication_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtSWQiOiI1IiwidGVhbU5hbWUiOiJtYWRkeWRldGVjdG9yMSIsImlhdCI6MTczMTUzMDAyNCwiZXhwIjoxNzMxNjE2NDI0fQ.tFvKGRqeIpg19eFBiG_tbzCFULNh6qpNMYFBh-UB23g'
-session_id = 3 #os.getenv(‘SESSION_ID’)
+base_url = 'http://52.207.242.165:3000/api/test/47' #os.getenv(‘BASE_URL’)
+authentication_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZWFtSWQiOiI1IiwidGVhbU5hbWUiOiJtYWRkeWRldGVjdG9yMSIsImlhdCI6MTczMjE1NjQzNSwiZXhwIjoxNzMyMjQyODM1fQ._OXuifMyYKqzOkkA6KJxWRErZl9yLdFGDJwhpTxK_dM'
+session_id = 4 #os.getenv(‘SESSION_ID’)
 '''
 header = {'Authorization': 'bearer ' + authentication_token, 'Content-Type': 'application/json'}
 
