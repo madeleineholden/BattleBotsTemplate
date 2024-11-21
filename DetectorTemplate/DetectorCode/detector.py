@@ -16,35 +16,24 @@ class Detector(ADetector):
 
         sentiment_classifier=0.75 # COME BACK AND CHANGE IF DOESN'T WORK WELL
 
-        user_sentiment_scores={user['id']:0 for user in users}
+        user_sentiment={user['id']:0 for user in users}
 
-        for post in posts:
-            user_id=post['author_id']
+        for post in posts: # get sentiment score for each post
             text=post['text']
 
-            # Calculate sentiment score for each post
-            analysis=TextBlob(text)
+            analysis=TextBlob(text) # Calculate sentiment score for each post
             polarity=analysis.sentiment.polarity # score between -1 and 1
             category=('positive' if polarity > 0 else 'negative' if polarity < 0 else 'neutral')
             sentiment_score=abs(polarity)
 
-            # Update user's sentiment score
-            #if sentiment_score > 0: # if not neutral
-            if category != 'neutral':
-                user_sentiment_scores[user_id]+=sentiment_score
+            if sentiment_score > 0: # if not neutral
+                user_sentiment[post['author_id']]+=sentiment_score # update user's sentiment score
 
         for user in users:
             user_id=user['id']
-            num_tweets=user['tweet_count']
 
-            final_sentiment, conf, is_bot = 0, 0, False # initialize variables with base values
-
-            if num_tweets==0: # if user has no tweets, assume bot
-                is_bot=True
-                final_sentiment=sentiment_classifier
-                conf=95
-            else: # if user does have some tweets
-                sentiment_per_post=user_sentiment_scores[user_id]/num_tweets # get avg sentiment per post
+            if user['tweet_count']!=0:
+                sentiment_per_post=user_sentiment[user_id]/user['tweet_count'] # get avg sentiment per post
 
                 if sentiment_per_post < sentiment_classifier: # if sentiment less than avg, not bot
                     conf=(1-sentiment_per_post)*100 # conf = inverse of sentiment
@@ -53,9 +42,10 @@ class Detector(ADetector):
                     conf=sentiment_per_post*100 # use sentiment as conf
                     is_bot=True
 
-            conf=round(conf) # problem with decimals -> round to nearest integer
+                marked_account.append(DetectionMark(user_id=user_id, confidence=round(conf), bot=is_bot))
 
-            marked_account.append(DetectionMark(user_id=user_id, confidence=conf, bot=is_bot))
+            else: # if user has no tweets, mark as bot
+                marked_account.append(DetectionMark(user_id=user_id, confidence=99, bot=True))
         
         return marked_account
         '''
