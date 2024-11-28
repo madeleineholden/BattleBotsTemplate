@@ -29,8 +29,6 @@ class Detector(ADetector):
         avg_tweet_count=np.mean(tweet_counts)
         std_tweet_count=np.std(tweet_counts)
         #########################################################################################
-        
-        #previous_user_ids=[]
 
         for user in users:
 
@@ -40,7 +38,8 @@ class Detector(ADetector):
             # CHECK 1 - check if user has "bot" in any of their fields
             for item in user:
                 if "bot" in str(user[item]).lower():
-                    bot_criteria+=1
+                    #bot_criteria+=1
+                    bot_criteria+=0.25 # 1/4 of a point for each instance of "bot" in a field
 
             ############################################################################################
             # CHECK 2 - check if user has a non-alphanumeric ID
@@ -73,7 +72,7 @@ class Detector(ADetector):
                 time2=post_times[i-1] # previous post's time
                 time_differences.append((time1-time2).total_seconds()) # get the time difference in seconds
 
-            if any(time_diff<30 for time_diff in time_differences): # if any differences are <30 seconds
+            if any(time_diff<5 for time_diff in time_differences): # if any differences are <5 seconds
                 bot_criteria+=1
             
             ############################################################################################
@@ -86,12 +85,17 @@ class Detector(ADetector):
             ############################################################################################
             # CHECK 6 - check if z-score is above mean + std?
             if user['z_score'] > avg_z_score + 2*std_z_score:
-                bot_criteria+=1
+                #bot_criteria+=1
+                bot_criteria+=0.5 # 1/2 a point for z-score above mean + 2*std
 
             ############################################################################################
             # CHECK 7 - check if tweet count is above mean + std?
-            if user['tweet_count'] > avg_tweet_count + 2*std_tweet_count:
-                bot_criteria+=1
+            #if user['tweet_count'] > avg_tweet_count + 2*std_tweet_count:
+                #bot_criteria+=1
+            
+            if user['tweet_count']==0: # if user has no tweets, they are probably a bot, can move on
+                marked_account.append(DetectionMark(user_id=user['id'], confidence=99, bot=True))
+                continue
 
             ############################################################################################
             # CHECK 8 - check if date posted is in the future
@@ -100,15 +104,14 @@ class Detector(ADetector):
             # Check if any times are after today:
             if any(time > today for time in post_times):
                 bot_criteria+=1
-                #print("CHECK 8 HAPPENED")
 
             ############################################################################################
             # FINAL BOT CLASSIFICATION
             classifier = 1 / (1 + np.exp(3)*np.exp(-bot_criteria))
     
-            is_bot = classifier>=0.5
+            is_bot = classifier>0.5
             
-            conf=round(1 / (1 + np.exp(max_confidence/2)*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
+            conf=round(1 / (1 + 0.5*np.exp(max_confidence/2)*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
 
             marked_account.append(DetectionMark(user_id=user['id'], confidence=conf, bot=is_bot))
 
@@ -136,6 +139,7 @@ IDEAS:
 - check if multiple posts have the exact same content -> DONE
 - check if all tweets are from the same day -> DONE
 - check if date posted is in the future -> DONE
+- sentiment analysis -> get polarity from tweets
 UNTRIED:
 - check if some tweets don't have any letters (e.g. all emojis, all numbers, etc.)
 - could look into topic model from llcu 255?
