@@ -23,7 +23,7 @@ class Detector(ADetector):
             polarity=analysis.sentiment.polarity # score between -1 and 1
             sentiment_score=abs(polarity)
 
-            if sentiment_score > 0: # polarity if not neutral
+            if sentiment_score > 0: # if polarity is either positive or negative
                 user_sentiment[post['author_id']]+=sentiment_score # update user's sentiment score
 
         for user in users:
