@@ -89,7 +89,7 @@ class Detector(ADetector):
                 bot_criteria+=0.5 # 1/2 a point for z-score above mean + 2*std
 
             ############################################################################################
-            # CHECK 7 - check if tweet count is above mean + std?
+            # CHECK 7 - check if tweet count is above mean + std? -> CHECK IF USER HAS NO TWEETS
             #if user['tweet_count'] > avg_tweet_count + 2*std_tweet_count:
                 #bot_criteria+=1
             
