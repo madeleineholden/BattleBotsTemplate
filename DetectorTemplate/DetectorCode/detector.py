@@ -22,7 +22,6 @@ class Detector(ADetector):
             analysis=TextBlob(text) # Calculate sentiment score for each post
             polarity=analysis.sentiment.polarity # score between -1 and 1
             sentiment_score=abs(polarity)
-            #category=('positive' if polarity > 0 else 'negative' if polarity < 0 else 'neutral')
 
             if sentiment_score > 0: # polarity if not neutral
                 user_sentiment[post['author_id']]+=sentiment_score # update user's sentiment score
@@ -30,16 +29,14 @@ class Detector(ADetector):
         for user in users:
             user_id=user['id']
 
-            if user['tweet_count']!=0:
+            if user['tweet_count']!=0: # if user has tweets
                 sentiment_per_post=user_sentiment[user_id]/user['tweet_count'] # get avg sentiment per post
 
-                #sentiment_classifier=0.75 # COME BACK AND CHANGE IF DOESN'T WORK WELL
-
-                if sentiment_per_post < 0.75: # if sentiment less than avg, not bot
+                if sentiment_per_post < 0.75: # if sentiment less than 0.75 threshold, probably not bot
                     conf=(1-sentiment_per_post)*100 # conf = inverse of sentiment
                     is_bot=False
-                else: # if sentiment greater than avg, bot
-                    conf=sentiment_per_post*100 # use sentiment as conf
+                else: # if sentiment greater than avg, probably bot
+                    conf=sentiment_per_post*100 # use sentiment per post as conf
                     is_bot=True
 
                 marked_account.append(DetectionMark(user_id=user_id, confidence=round(conf), bot=is_bot))
