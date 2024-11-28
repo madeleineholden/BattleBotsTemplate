@@ -107,9 +107,9 @@ class Detector(ADetector):
 
             ############################################################################################
             # FINAL BOT CLASSIFICATION
-            classifier = 1 / (1 + np.exp(3)*np.exp(-bot_criteria))
+            classifier = 1 / (1 + np.exp(3)*np.exp(-bot_criteria)) # Modified sigmoid function
     
-            is_bot = classifier>0.5
+            is_bot = classifier>0.5 # If user has over 3 criteria, probably a bot
             
             conf=round(1 / (1 + 0.5*np.exp(max_confidence/2)*np.exp(-bot_criteria))*100) # 1 / (1 + e^(-x)) (shifted to be between 0 & 8, automatically bounded btw 0 & 100)
 
